@@ -1,8 +1,8 @@
-#include <WiFi.h>
+#include <ESP8266WiFi.h>
 
 #include "../include/initWiFi.hpp"
 
-#include "../include/config.h"
+#include "../include/config.hpp"
 
 void initWiFi() {
     WiFi.begin(SSID, PASSWORD);
@@ -10,5 +10,6 @@ void initWiFi() {
         Serial.println("Connecting to WiFi ...");
     }
     Serial.println("Connected to WiFi");
-    Serial.println("IP Address: " + WiFi.localIP());
+    Serial.print("IP Address: ");
+    Serial.println(WiFi.localIP());
 }

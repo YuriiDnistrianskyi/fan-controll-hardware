@@ -1,2 +1,2 @@
-const char* MY_SSID = "SSID";
-const char* MY_PASSWORD = "PASSWORD";
+const char* MY_SSID = "Test";
+const char* MY_PASSWORD = "123123123";

@@ -5,27 +5,28 @@
 
 #include "../include/config.hpp"
 
-extern fanState;
+extern bool fanState;
 
 Adafruit_BME280 bme;
-TM1637Display display(BME280_SCL_PIN, BME280_SDA_PIN);
+TM1637Display display(TM1637_CLK_PIN, TM1637_DIO_PIN);
 
 volatile uint32_t lastTimeClickButton = 0;
 
-void IRAM_ATTR clickbutton() {
-    uint32_t nowTimeClikcButton = millis();
+void IRAM_ATTR clickButton() {
+    uint32_t nowTimeClickButton = millis();
     if ((nowTimeClickButton - lastTimeClickButton) > DEBOUNCE_TIME_CLICK_BUTTON) {
         lastTimeClickButton = nowTimeClickButton;
-        fanState = !fanstate;
+        fanState = !fanState;
     }
 }
 
 void initBME280() {
     bool status;
+    // Wire.begin(BME280_SCL_PIN, BME280_SDA_PIN);
     status = bme.begin(0x76);
     if (!status) {
         Serial.println("Could not find a valid BME280 sensor");
-        while(1);
+        return;
     }
 }
 
@@ -35,6 +36,7 @@ void initDisplay() {
 }
 
 void initPins() {
+    Serial.begin(115200);
     // init BME280
     initBME280();
 

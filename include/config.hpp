@@ -5,8 +5,8 @@
 
 extern const uint8_t FAN_PIN;
 
-extern const uint8_t BME280_SDA_PIN;
-extern const uint8_t BME280_SCL_PIN;
+extern const uint8_t TM1637_CLK_PIN;
+extern const uint8_t TM1637_DIO_PIN;
 
 extern const uint8_t BUTTON_PIN;
 
