@@ -3,6 +3,8 @@
 
 #include <Arduino.h>
 
+extern const uint8_t POTENTIOMETER_PIN;
+
 extern const uint8_t FAN_PIN;
 
 extern const uint8_t TM1637_CLK_PIN;

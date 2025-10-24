@@ -4,6 +4,7 @@
 #include "../include/initWiFi.hpp"
 #include "../include/readData.hpp"
 #include "../include/printData.hpp"
+#include "../include/setPowerFan.hpp"
 
 uint32_t lastTimeForReadSensor = 0;
 bool fanState = false;
@@ -19,5 +20,8 @@ void loop() {
     lastTimeForReadSensor = nowTimeForReadSensor;
     float motorTemperature = readData();
     printData(motorTemperature);
+
+    setPowerFan(fanState);
+
   }
 }
