@@ -20,8 +20,7 @@ void loop() {
     lastTimeForReadSensor = nowTimeForReadSensor;
     float motorTemperature = readData();
     printData(motorTemperature);
-
+    // mqtt
     setPowerFan(fanState);
-
   }
 }

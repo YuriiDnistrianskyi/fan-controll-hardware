@@ -5,7 +5,8 @@
 
 const uint8_t POTENTIOMETER_PIN = A0;
 
-const uint8_t FAN_PIN = D3;
+const uint8_t FAN_PWM_PIN = D8;
+// const uint8_t FAN_TECH_PIN = D3;
 
 // const uint8_t BME280_SDA_PIN = D5;
 // const uint8_t BME280_SCL_PIN = D6;

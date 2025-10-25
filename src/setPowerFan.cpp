@@ -2,14 +2,36 @@
 
 #include "../include/config.hpp"
 
-uint8_t lastValuePowerFan = 0;
+bool lastFanState = false;
+uint8_t lastPowerFan = 0;
 
 void setPowerFan(bool fanState) {
     uint8_t valuePowerFan = analogRead(POTENTIOMETER_PIN);
+    uint8_t powerFan;
+    
+    if (valuePowerFan >= 0 && valuePowerFan <= 10) {
+        powerFan = 0;  
+    } else if (valuePowerFan > 10 && valuePowerFan < 85) {
+        powerFan = 85;  
+    } else if (valuePowerFan >= 85 && valuePowerFan < 170) {
+        powerFan = 170;
+    } else if (valuePowerFan >= 170) {
+        powerFan = 255;
+    }
 
-    if (abs(valuePowerFan - lastValuePowerFan) > 40) {
-        lastValuePowerFan = valuePowerFan;
-        Serial.println("Power Fan: " + String(valuePowerFan));
-        // set poser on fan
+    if (lastPowerFan != powerFan) {
+        lastPowerFan = powerFan;
+    }
+
+    if (fanState) {
+        if (lastFanState != fanState) {
+            lastFanState = fanState;
+            analogWrite(FAN_PWM_PIN, lastPowerFan);
+        }
+    } else {
+        if (lastFanState != fanState) {
+            lastFanState = fanState;
+            analogWrite(FAN_PWM_PIN, 0);
+        }
     }
 }

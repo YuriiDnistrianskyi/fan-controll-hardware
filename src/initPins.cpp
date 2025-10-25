@@ -35,17 +35,19 @@ void initDisplay() {
     display.clear();
 }
 
+void initFan() {
+    analogWriteRange(255);
+    pinMode(FAN_PWM_PIN, OUTPUT);
+    analogWrite(FAN_PWM_PIN, 0);
+}
+
 void initPins() {
     Serial.begin(115200);
-    // init BME280
+
     initBME280();
-
-    // init Fan
-
-    // init display
+    initFan();
     initDisplay();
 
-    // init button
     pinMode(BUTTON_PIN, INPUT);
     attachInterrupt(digitalPinToInterrupt(BUTTON_PIN), clickButton, RISING);
 }
