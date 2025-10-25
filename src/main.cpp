@@ -8,6 +8,8 @@
 
 uint32_t lastTimeForReadSensor = 0;
 bool fanState = false;
+bool lastFanState = false;
+uint8_t lastPowerFan = 0;
 
 void setup() {
   initPins();
@@ -20,6 +22,20 @@ void loop() {
     lastTimeForReadSensor = nowTimeForReadSensor;
     float motorTemperature = readData();
     printData(motorTemperature);
+
+    if (motorTemperature >= MAX_ALLOWED_TEMPERATURE) {
+      if (fanState != true) {
+        fanState = true;
+      }
+      // if (lastPowerFan == 0) {
+      //   lastPowerFan = 85;
+      // }
+    } else if (motorTemperature <= MIN_ALLOWED_TEMPERATURE) {
+      if (fanState != false) {
+        fanState = false;
+      }
+    }
+
     // mqtt
     setPowerFan(fanState);
   }

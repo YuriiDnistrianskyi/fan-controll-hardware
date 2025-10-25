@@ -18,4 +18,7 @@ extern const uint32_t DEBOUNCE_TIME_CLICK_BUTTON;
 extern const char* SSID;
 extern const char* PASSWORD;
 
+extern const uint8_t MAX_ALLOWED_TEMPERATURE;
+extern const uint8_t MIN_ALLOWED_TEMPERATURE;
+
 #endif

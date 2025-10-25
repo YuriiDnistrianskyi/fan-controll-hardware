@@ -2,8 +2,8 @@
 
 #include "../include/config.hpp"
 
-bool lastFanState = false;
-uint8_t lastPowerFan = 0;
+extern bool lastFanState;
+extern uint8_t lastPowerFan;
 
 void setPowerFan(bool fanState) {
     uint8_t valuePowerFan = analogRead(POTENTIOMETER_PIN);
