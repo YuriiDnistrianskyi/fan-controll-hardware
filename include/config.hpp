@@ -14,9 +14,13 @@ extern const uint8_t BUTTON_PIN;
 
 extern const uint32_t DELAY_TIME_FOR_READ_SENSOR;
 extern const uint32_t DEBOUNCE_TIME_CLICK_BUTTON;
+extern const uint32_t DELAY_TIME_FOR_RECONNECT_MQTT;
 
 extern const char* SSID;
 extern const char* PASSWORD;
+
+extern const char* MQTT_BROKER_URI;
+extern const char* MQTT_BROKER_PORT;
 
 extern const uint8_t MAX_ALLOWED_TEMPERATURE;
 extern const uint8_t MIN_ALLOWED_TEMPERATURE;
