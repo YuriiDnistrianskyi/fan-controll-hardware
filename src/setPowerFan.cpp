@@ -19,19 +19,20 @@ void setPowerFan(bool fanState) {
         powerFan = 255;
     }
 
-    if (lastPowerFan != powerFan) {
-        lastPowerFan = powerFan;
-    }
-
     if (fanState) {
         if (lastFanState != fanState) {
             lastFanState = fanState;
+            analogWrite(FAN_PWM_PIN, lastPowerFan);
+        } else if (lastPowerFan != powerFan) {
+            lastPowerFan = powerFan;
             analogWrite(FAN_PWM_PIN, lastPowerFan);
         }
     } else {
         if (lastFanState != fanState) {
             lastFanState = fanState;
             analogWrite(FAN_PWM_PIN, 0);
+        } else if (lastPowerFan != powerFan) {
+            lastPowerFan = powerFan;
         }
     }
 }
