@@ -1,29 +1,30 @@
 #include "../include/setPowerFan.hpp"
 
+#include "../include/powerFanEnum.hpp"
 #include "../include/config.hpp"
 
 extern bool lastFanState;
-extern uint8_t currentPowerFan;
-extern uint8_t powerFanMQTT;
+extern PowerFanEnum currentPowerFan;
+extern PowerFanEnum powerFanMQTT;
 extern bool usingPowerFanMQTT;
 
-uint8_t lastPowerFanPotentiometer = 0;
+PowerFanEnum lastPowerFanPotentiometer = POWER_FAN_0;
 
 void setPowerFan(bool fanState) {
     uint8_t valuePowerFan = analogRead(POTENTIOMETER_PIN);
-    uint8_t powerFanPotentiometer = 0;
+    PowerFanEnum powerFanPotentiometer = POWER_FAN_0;
     
-    if (valuePowerFan >= 0 && valuePowerFan <= 10) {
-        powerFanPotentiometer = 0;
+    if (valuePowerFan >= 0 && valuePowerFan <= 15) {
+        powerFanPotentiometer = POWER_FAN_0;
     }
-    else if (valuePowerFan > 10 && valuePowerFan < 85) {
-        powerFanPotentiometer = 100;  
+    else if (valuePowerFan > 15 && valuePowerFan < 85) {
+        powerFanPotentiometer = POWER_FAN_1;  
     }
     else if (valuePowerFan >= 85 && valuePowerFan < 170) {
-        powerFanPotentiometer = 200;
+        powerFanPotentiometer = POWER_FAN_2;
     }
     else if (valuePowerFan >= 170) {
-        powerFanPotentiometer = 255;
+        powerFanPotentiometer = POWER_FAN_3;
     }
 
     if (lastPowerFanPotentiometer != powerFanPotentiometer) {
@@ -33,21 +34,7 @@ void setPowerFan(bool fanState) {
         }
     }
 
-    // if (usingPowerFanMQTT == false && lastPowerFanPotentiometer != powerFanPotentiometer) {
-    //     lastPowerFanPotentiometer = powerFanPotentiometer;
-    // }
-
-    // if (usingPowerFanMQTT == true && lastPowerFanPotentiometer != powerFanPotentiometer) {
-    //     usingPowerFanMQTT = false;
-    //     lastPowerFanPotentiometer = powerFanPotentiometer;
-    // }
-
-    Serial.println("--------------------------------");
-    Serial.println("State Fan: " + String(fanState));
-    Serial.println("Power Fan Potentiometer: " + String(powerFanPotentiometer));
-    Serial.println("State Fan MQTT: " + String(powerFanMQTT));
-
-    uint8_t newPower = usingPowerFanMQTT ? powerFanMQTT : powerFanPotentiometer;
+    PowerFanEnum newPower = usingPowerFanMQTT ? powerFanMQTT : powerFanPotentiometer;
 
     if (fanState) {
         if (lastFanState != fanState) {
@@ -69,4 +56,10 @@ void setPowerFan(bool fanState) {
             currentPowerFan = newPower;
         }
     }
+
+    Serial.println("State Fan: " + String(fanState));
+    Serial.println("Power Fan Potentiometer: " + String(powerFanPotentiometer));
+    Serial.println("Power Fan MQTT: " + String(powerFanMQTT));
+    Serial.print("Current Power Fan: ");
+    Serial.println(fanState ? String(currentPowerFan) : "0");
 }

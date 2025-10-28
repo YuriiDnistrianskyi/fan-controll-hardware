@@ -4,6 +4,7 @@
 void IRAM_ATTR clickbutton();
 void initBME280();
 void initDisplay();
+void initFan();
 void initPins();
 
 #endif

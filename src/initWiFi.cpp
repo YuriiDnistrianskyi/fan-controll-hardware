@@ -6,9 +6,12 @@
 
 void initWiFi() {
     WiFi.begin(SSID, PASSWORD);
+    Serial.print("Connecting to WiFi...");
     while (WiFi.status() != WL_CONNECTED) {
-        Serial.println("Connecting to WiFi ...");
+        Serial.print(".");
+        delay(2000);
     }
+    Serial.println();
     Serial.println("Connected to WiFi");
     Serial.print("IP Address: ");
     Serial.println(WiFi.localIP());

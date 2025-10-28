@@ -8,13 +8,14 @@
 #include "../include/readData.hpp"
 #include "../include/printData.hpp"
 #include "../include/setPowerFan.hpp"
+#include "../include/powerFanEnum.hpp"
 
 extern PubSubClient client;
 
 uint32_t lastTimeForReadSensor = 0;
 bool fanState = false;
 bool lastFanState = false;
-uint8_t currentPowerFan = 0;
+PowerFanEnum currentPowerFan = POWER_FAN_0;
 
 void setup() {
   initPins();
@@ -23,32 +24,36 @@ void setup() {
 }
 
 void loop() {
-  if (!client.connected())
+  if (!client.connected()) {
     reconnect();
+  }
+  else {
+    client.loop();
 
-  client.loop();
+    uint32_t nowTimeForReadSensor = millis();
+    if ((nowTimeForReadSensor - lastTimeForReadSensor) > DELAY_TIME_FOR_READ_SENSOR) {
+      lastTimeForReadSensor = nowTimeForReadSensor;
+      Serial.println("--------------");
 
-  uint32_t nowTimeForReadSensor = millis();
-  if ((nowTimeForReadSensor - lastTimeForReadSensor) > DELAY_TIME_FOR_READ_SENSOR) {
-    lastTimeForReadSensor = nowTimeForReadSensor;
-    float motorTemperature = readData();
-    printData(motorTemperature);
-    sendDataMQTT(motorTemperature);
+      float motorTemperature = readData();
+      printData(motorTemperature);
+      sendDataMQTT(motorTemperature);
 
-    if (motorTemperature >= MAX_ALLOWED_TEMPERATURE) {
-      if (fanState != true) {
-        fanState = true;
+      if (motorTemperature >= MAX_ALLOWED_TEMPERATURE) {
+        if (fanState != true) {
+          fanState = true;
+        }
+        // if (lastPowerFan == 0) {
+        //   lastPowerFan = 100;
+        // }
+      } 
+      else if (motorTemperature <= MIN_ALLOWED_TEMPERATURE) {
+        if (fanState != false) {
+          fanState = false;
+        }
       }
-      // if (lastPowerFan == 0) {
-      //   lastPowerFan = 85;
-      // }
-    } 
-    else if (motorTemperature <= MIN_ALLOWED_TEMPERATURE) {
-      if (fanState != false) {
-        fanState = false;
-      }
+      
+      setPowerFan(fanState);
     }
-    
-    setPowerFan(fanState);
   }
 }

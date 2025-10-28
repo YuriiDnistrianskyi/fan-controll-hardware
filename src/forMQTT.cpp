@@ -3,44 +3,47 @@
 
 #include "../include/forMQTT.hpp"
 
+#include "../include/powerFanEnum.hpp"
 #include "../include/config.hpp"
 
 extern bool fanState;
-extern uint8_t lastPowerFan;
-extern uint8_t newPowerFan;
 bool usingPowerFanMQTT = false;
 
 WiFiClient wifiClient;
 PubSubClient client(wifiClient);
 uint32_t lastTimeForReconncetMQTT = 0;
 
-uint8_t powerFanMQTT = 0;
+PowerFanEnum powerFanMQTT = POWER_FAN_0;
 
 void reconnect() {
-    while (!client.connected()) {
-        uint32_t nowTimeForReconnectMQTT = millis();
-        if ((nowTimeForReconnectMQTT - lastTimeForReconncetMQTT) > DELAY_TIME_FOR_RECONNECT_MQTT) {
-            lastTimeForReconncetMQTT = nowTimeForReconnectMQTT;
-            Serial.println("Connecting to MQTT...");
-            if (client.connect("ESPClient")) {
-                Serial.println("Connected to MQTT");
-                if (client.subscribe("fan/state"))
-                    Serial.println("Subscribed to fan/state");
-                else
-                    Serial.println("Failed to subscribe to fan/state");
-                
-                if (client.subscribe("fan/power"))
-                    Serial.println("Subscribed to fan/power");
-                else
-                    Serial.println("Failed to subscribe to fan/power");
-            } 
-            else {
-                Serial.print("Failed to connect to MQTT, rc=");
-                Serial.print(client.state());
-                Serial.println(" try again in 5 seconds");
-            }
+    uint32_t nowTimeForReconnectMQTT = millis();
+    if ((nowTimeForReconnectMQTT - lastTimeForReconncetMQTT) > DELAY_TIME_FOR_RECONNECT_MQTT) {
+        lastTimeForReconncetMQTT = nowTimeForReconnectMQTT;
+        Serial.println("Connecting to MQTT...");
+
+        String clientId = "fanControllClient-";
+        clientId += String(ESP.getChipId(), HEX);
+    
+        if (client.connect(clientId.c_str())) {
+            Serial.println("Connected to MQTT");
+            Serial.println("ID: " + clientId);
+            
+            if (client.subscribe("fan/state"))
+                Serial.println("Subscribed to fan/state");
+            else
+                Serial.println("Failed to subscribe to fan/state");
+            
+            if (client.subscribe("fan/power"))
+                Serial.println("Subscribed to fan/power");
+            else
+                Serial.println("Failed to subscribe to fan/power");
+        } 
+        else {
+            Serial.print("Failed to connect to MQTT, rc=");
+            Serial.print(client.state());
+            Serial.println(" try again in 5 seconds");
         }
-    };
+    }
 }
 
 void sendDataMQTT(float motorTemperature) {
@@ -64,16 +67,16 @@ void callback(char* topic, byte* payload, unsigned int length) {
     else if(String(topic) == "fan/power") {
         switch(msg.toInt()) {
             case 0:
-                powerFanMQTT = 0;
+                powerFanMQTT = POWER_FAN_0;
                 break;
             case 1:
-                powerFanMQTT = 85;
+                powerFanMQTT = POWER_FAN_1;
                 break;
             case 2:
-                powerFanMQTT = 190;
+                powerFanMQTT = POWER_FAN_2;
                 break;  
             case 3:
-                powerFanMQTT = 255;
+                powerFanMQTT = POWER_FAN_3;
                 break;
             default:
                 break;
