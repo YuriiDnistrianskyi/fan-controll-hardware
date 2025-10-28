@@ -14,7 +14,7 @@ extern PubSubClient client;
 uint32_t lastTimeForReadSensor = 0;
 bool fanState = false;
 bool lastFanState = false;
-uint8_t lastPowerFan = 0;
+uint8_t currentPowerFan = 0;
 
 void setup() {
   initPins();
@@ -42,7 +42,8 @@ void loop() {
       // if (lastPowerFan == 0) {
       //   lastPowerFan = 85;
       // }
-    } else if (motorTemperature <= MIN_ALLOWED_TEMPERATURE) {
+    } 
+    else if (motorTemperature <= MIN_ALLOWED_TEMPERATURE) {
       if (fanState != false) {
         fanState = false;
       }
