@@ -1,5 +1,6 @@
 #include <ESP8266WiFi.h>
 #include <PubSubClient.h>
+#include <ArduinoJson.h>
 
 #include "../include/forMQTT.hpp"
 
@@ -47,9 +48,11 @@ void reconnect() {
 }
 
 void sendDataMQTT(float motorTemperature) {
-    char temperature[10];
-    dtostrf(motorTemperature, 6, 2, temperature);
-    client.publish("motor/temperature", temperature);
+    StaticJsonDocument<200> doc;
+    doc["motor/temperature"] = motorTemperature;
+    String json;
+    serializeJson(doc, json);
+    client.publish("motor/temperature", json.c_str());
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
