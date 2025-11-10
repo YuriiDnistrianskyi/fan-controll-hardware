@@ -47,45 +47,96 @@ void reconnect() {
     }
 }
 
-void sendDataMQTT(float motorTemperature) {
-    StaticJsonDocument<200> doc;
-    doc["motor/temperature"] = motorTemperature;
-    String json;
-    serializeJson(doc, json);
-    client.publish("motor/temperature", json.c_str());
+void sendDataMQTT(float motorTemperature, bool fanState, PowerFanEnum powerFan) {
+    StaticJsonDocument<200> docTemperature;
+    docTemperature["motor/temperature"] = motorTemperature;
+    String jsonTemperature;
+    serializeJson(docTemperature, jsonTemperature);
+    client.publish("motor/temperature", jsonTemperature.c_str());
+
+    StaticJsonDocument<200> docFanState;
+    docFanState["state"] = fanState ? 1 : 0;
+    String jsonFanState;
+    serializeJson(docFanState, jsonFanState);
+    client.publish("fan/state/info", jsonFanState.c_str());
+
+    uint8_t sendPowerFan;
+    switch(powerFan) {
+        case POWER_FAN_0:
+            sendPowerFan = 0;
+            break;
+        case POWER_FAN_1:
+            sendPowerFan = 1;
+            break;
+        case POWER_FAN_2:
+            sendPowerFan = 2;
+            break;  
+        case POWER_FAN_3:
+            sendPowerFan = 3;
+            break;
+        default:
+            sendPowerFan = 0;
+            break;
+    }
+
+    StaticJsonDocument<200> docFanPower;
+    docFanPower["power"] = sendPowerFan;
+    String jsonFanPower;
+    serializeJson(docFanPower, jsonFanPower);
+    client.publish("fan/power/info", jsonFanPower.c_str());
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
     String msg;
     for (int i = 0; i < length; i++) msg += (char)payload[i];
 
+    StaticJsonDocument<256> doc;
+    DeserializationError error = deserializeJson(doc, msg);
+
+    if (error) {
+        Serial.print("Error: ");
+        Serial.println(error.c_str());
+        return;
+    }
+
     if (String(topic) == "fan/state") {
-        if (msg == "ON" && fanState != true) {
-            fanState = true;
-        } 
-        else if (msg == "OFF" && fanState != false) {
-            fanState = false;
+        if (doc.containsKey("state")) {
+            if (doc["state"] == 1 && fanState != true) {
+                fanState = true;
+            } 
+            else if (doc["state"] == 0 && fanState != false) {
+                fanState = false;
+            }
         }
     } 
     else if(String(topic) == "fan/power") {
-        switch(msg.toInt()) {
-            case 0:
-                powerFanMQTT = POWER_FAN_0;
-                break;
-            case 1:
-                powerFanMQTT = POWER_FAN_1;
-                break;
-            case 2:
-                powerFanMQTT = POWER_FAN_2;
-                break;  
-            case 3:
-                powerFanMQTT = POWER_FAN_3;
-                break;
-            default:
-                break;
+        if (doc.containsKey("power")) {
+            String power = doc["power"];
+            bool errorInSwitchCase = false;
+
+            switch(power.toInt()) {
+                case 0:
+                    powerFanMQTT = POWER_FAN_0;
+                    break;
+                case 1:
+                    powerFanMQTT = POWER_FAN_1;
+                    break;
+                case 2:
+                    powerFanMQTT = POWER_FAN_2;
+                    break;  
+                case 3:
+                    powerFanMQTT = POWER_FAN_3;
+                    break;
+                default:
+                    Serial.println("Unknow power fan value: " + power);
+                    errorInSwitchCase = true;
+                    break;
+            }
+
+            if (!errorInSwitchCase) {
+                usingPowerFanMQTT = true;
+            }
         }
-        //
-        usingPowerFanMQTT = true;
     }
 }
 

@@ -5,6 +5,6 @@
 extern Adafruit_BME280 bme;
 
 float readData() {
-    float temperature = bme.readTemperature();
+    float temperature = bme.readTemperature() + 30.00;
     return temperature;
 }

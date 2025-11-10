@@ -37,7 +37,6 @@ void loop() {
 
       float motorTemperature = readData();
       printData(motorTemperature);
-      sendDataMQTT(motorTemperature);
 
       if (motorTemperature >= MAX_ALLOWED_TEMPERATURE) {
         if (fanState != true) {
@@ -54,6 +53,7 @@ void loop() {
       }
       
       setPowerFan(fanState);
+      sendDataMQTT(motorTemperature, fanState, currentPowerFan);
     }
   }
 }
