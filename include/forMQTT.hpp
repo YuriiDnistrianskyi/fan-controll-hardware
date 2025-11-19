@@ -4,7 +4,7 @@
 #include "PowerFanEnum.hpp"
 
 void reconnect();
-void sendDataMQTT(float motorTemperature, bool fanState, PowerFanEnum powerFan);
+void sendDataMQTT(float temperature, float pressure, bool fanState, PowerFanEnum powerFan);
 void callback(char* topic, byte* payload, unsigned int length);
 void initMQTT();
 

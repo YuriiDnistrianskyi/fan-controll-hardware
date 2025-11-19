@@ -35,8 +35,10 @@ void loop() {
       lastTimeForReadSensor = nowTimeForReadSensor;
       Serial.println("--------------");
 
-      float motorTemperature = readData();
+      float motorTemperature = readTemperature();
+      float motorPressure = readPressure();
       printData(motorTemperature);
+      Serial.println("Pressure: " + String(motorPressure)); //
 
       if (motorTemperature >= MAX_ALLOWED_TEMPERATURE) {
         if (fanState != true) {
@@ -53,7 +55,7 @@ void loop() {
       }
       
       setPowerFan(fanState);
-      sendDataMQTT(motorTemperature, fanState, currentPowerFan);
+      sendDataMQTT(motorTemperature, motorPressure, fanState, currentPowerFan);
     }
   }
 }

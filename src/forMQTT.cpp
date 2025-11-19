@@ -29,15 +29,15 @@ void reconnect() {
             Serial.println("Connected to MQTT");
             Serial.println("ID: " + clientId);
             
-            if (client.subscribe("fan/state"))
-                Serial.println("Subscribed to fan/state");
+            if (client.subscribe("esp8266/fan/state"))
+                Serial.println("Subscribed to esp8266/fan/state");
             else
-                Serial.println("Failed to subscribe to fan/state");
+                Serial.println("Failed to subscribe to esp8266/fan/state");
             
-            if (client.subscribe("fan/power"))
-                Serial.println("Subscribed to fan/power");
+            if (client.subscribe("esp8266/fan/power"))
+                Serial.println("Subscribed to esp8266/fan/power");
             else
-                Serial.println("Failed to subscribe to fan/power");
+                Serial.println("Failed to subscribe to esp8266/fan/power");
         } 
         else {
             Serial.print("Failed to connect to MQTT, rc=");
@@ -47,18 +47,24 @@ void reconnect() {
     }
 }
 
-void sendDataMQTT(float motorTemperature, bool fanState, PowerFanEnum powerFan) {
-    StaticJsonDocument<200> docTemperature;
-    docTemperature["motor/temperature"] = motorTemperature;
-    String jsonTemperature;
-    serializeJson(docTemperature, jsonTemperature);
-    client.publish("motor/temperature", jsonTemperature.c_str());
+void sendDataMQTT(float temperature, float pressure, bool fanState, PowerFanEnum powerFan) {
+    StaticJsonDocument<200> docTemperatureNodeRed;
+    docTemperatureNodeRed["temperature"] = temperature;
+    String jsonTemperatureNodeRed;
+    serializeJson(docTemperatureNodeRed, jsonTemperatureNodeRed);
+    client.publish("esp8266/data", jsonTemperatureNodeRed.c_str());
+
+    StaticJsonDocument<200> docPressureNodeRed;
+    docPressureNodeRed["pressure"] = pressure;
+    String jsonPressureNodeRed;
+    serializeJson(docPressureNodeRed, jsonPressureNodeRed);
+    client.publish("esp8266/data", jsonPressureNodeRed.c_str());
 
     StaticJsonDocument<200> docFanState;
     docFanState["state"] = fanState ? 1 : 0;
     String jsonFanState;
     serializeJson(docFanState, jsonFanState);
-    client.publish("fan/state/info", jsonFanState.c_str());
+    client.publish("esp8266/fan/state/info", jsonFanState.c_str());
 
     uint8_t sendPowerFan;
     switch(powerFan) {
@@ -83,7 +89,7 @@ void sendDataMQTT(float motorTemperature, bool fanState, PowerFanEnum powerFan) 
     docFanPower["power"] = sendPowerFan;
     String jsonFanPower;
     serializeJson(docFanPower, jsonFanPower);
-    client.publish("fan/power/info", jsonFanPower.c_str());
+    client.publish("esp8266/fan/power/info", jsonFanPower.c_str());
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
@@ -99,7 +105,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
         return;
     }
 
-    if (String(topic) == "fan/state") {
+    if (String(topic) == "esp8266/fan/state") {
         if (doc.containsKey("state")) {
             if (doc["state"] == 1 && fanState != true) {
                 fanState = true;
@@ -109,7 +115,7 @@ void callback(char* topic, byte* payload, unsigned int length) {
             }
         }
     } 
-    else if(String(topic) == "fan/power") {
+    else if(String(topic) == "esp8266/fan/power") {
         if (doc.containsKey("power")) {
             String power = doc["power"];
             bool errorInSwitchCase = false;
