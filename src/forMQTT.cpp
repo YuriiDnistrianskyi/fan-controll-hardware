@@ -60,36 +60,36 @@ void sendDataMQTT(float temperature, float pressure, bool fanState, PowerFanEnum
     serializeJson(docPressureNodeRed, jsonPressureNodeRed);
     client.publish("esp8266/data", jsonPressureNodeRed.c_str());
 
-    StaticJsonDocument<200> docFanState;
-    docFanState["state"] = fanState ? 1 : 0;
-    String jsonFanState;
-    serializeJson(docFanState, jsonFanState);
-    client.publish("esp8266/fan/state/info", jsonFanState.c_str());
+    // StaticJsonDocument<200> docFanState;
+    // docFanState["state"] = fanState ? 1 : 0;
+    // String jsonFanState;
+    // serializeJson(docFanState, jsonFanState);
+    // client.publish("esp8266/fan/state/info", jsonFanState.c_str());
 
-    uint8_t sendPowerFan;
-    switch(powerFan) {
-        case POWER_FAN_0:
-            sendPowerFan = 0;
-            break;
-        case POWER_FAN_1:
-            sendPowerFan = 1;
-            break;
-        case POWER_FAN_2:
-            sendPowerFan = 2;
-            break;  
-        case POWER_FAN_3:
-            sendPowerFan = 3;
-            break;
-        default:
-            sendPowerFan = 0;
-            break;
-    }
+    // uint8_t sendPowerFan;
+    // switch(powerFan) {
+    //     case POWER_FAN_0:
+    //         sendPowerFan = 0;
+    //         break;
+    //     case POWER_FAN_1:
+    //         sendPowerFan = 1;
+    //         break;
+    //     case POWER_FAN_2:
+    //         sendPowerFan = 2;
+    //         break;  
+    //     case POWER_FAN_3:
+    //         sendPowerFan = 3;
+    //         break;
+    //     default:
+    //         sendPowerFan = 0;
+    //         break;
+    // }
 
-    StaticJsonDocument<200> docFanPower;
-    docFanPower["power"] = sendPowerFan;
-    String jsonFanPower;
-    serializeJson(docFanPower, jsonFanPower);
-    client.publish("esp8266/fan/power/info", jsonFanPower.c_str());
+    // StaticJsonDocument<200> docFanPower;
+    // docFanPower["power"] = sendPowerFan;
+    // String jsonFanPower;
+    // serializeJson(docFanPower, jsonFanPower);
+    // client.publish("esp8266/fan/power/info", jsonFanPower.c_str());
 }
 
 void callback(char* topic, byte* payload, unsigned int length) {
