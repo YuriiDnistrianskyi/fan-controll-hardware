@@ -10,6 +10,6 @@ float readTemperature() {
 }
 
 float readPressure() {
-    float pressure = (bme.readPressure() / 100.0F) * 16 * pow(10, -5);
+    float pressure = (bme.readPressure() / 100.0F); // hPa
     return pressure;
 }
